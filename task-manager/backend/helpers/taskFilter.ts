@@ -30,6 +30,20 @@ export function filterTasks(
       return false;
     }
 
+    if (!task.dueDate) {
+      return true;
+    }
+
+    const dueDateTime = new Date(task.dueDate).getTime();
+
+    if (filters.dueDateFrom && dueDateTime < filters.dueDateFrom.getTime()) {
+      return false;
+    }
+
+    if (filters.dueDateTo && dueDateTime > filters.dueDateTo.getTime()) {
+      return false;
+    }
+
     return true;
   });
 }

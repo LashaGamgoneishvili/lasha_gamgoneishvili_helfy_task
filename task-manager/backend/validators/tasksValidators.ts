@@ -29,6 +29,18 @@ const createdAtToQueryValidator: ValidationChain = query("createdAtTo")
   .withMessage("createdAtTo must be a valid ISO date!")
   .toDate();
 
+const dueDateFromQueryValidator: ValidationChain = query("dueDateFrom")
+  .optional()
+  .isISO8601()
+  .withMessage("dueDateFrom must be a valid ISO date!")
+  .toDate();
+
+const dueDateToQueryValidator: ValidationChain = query("dueDateTo")
+  .optional()
+  .isISO8601()
+  .withMessage("dueDateTo must be a valid ISO date!")
+  .toDate();
+
 const sortByQueryValidator: ValidationChain = query("sortBy")
   .optional()
   .isIn(["id", "title", "createdAt", "priority"])
@@ -65,6 +77,12 @@ const priorityValidator: ValidationChain = body("priority")
   .isIn(["low", "medium", "high"])
   .withMessage("priority can only be one of: low , medium , high!");
 
+const dueDateValidator: ValidationChain = body("dueDate")
+  .optional()
+  .isISO8601()
+  .withMessage("dueDateFrom must be a valid ISO date!")
+  .toDate();
+
 const completedValidator: ValidationChain = body("completed")
   .trim()
   .notEmpty()
@@ -78,6 +96,8 @@ export const getAllTasksValidator: ValidationChain[] = [
   priorityQueryValidator,
   createdAtFromQueryValidator,
   createdAtToQueryValidator,
+  dueDateFromQueryValidator,
+  dueDateToQueryValidator,
   sortByQueryValidator,
   sortOrderQueryValidator,
 ];
@@ -86,6 +106,7 @@ export const createNewTaskValidator: ValidationChain[] = [
   titleValidator,
   descriptionValidator,
   priorityValidator,
+  dueDateValidator,
 ];
 
 export const updateTaskValidator: ValidationChain[] = [
@@ -93,6 +114,7 @@ export const updateTaskValidator: ValidationChain[] = [
   titleValidator,
   descriptionValidator,
   priorityValidator,
+  dueDateValidator,
 ];
 
 export const deleteTaskValidator: ValidationChain[] = [idValidator];

@@ -28,6 +28,11 @@ export function sortTasks(
       case "priority":
         result = priorityRank[a.priority] - priorityRank[b.priority];
         break;
+
+      case "dueDate":
+        result =
+          new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime();
+        break;
     }
 
     return result * direction;

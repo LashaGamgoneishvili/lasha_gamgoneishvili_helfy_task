@@ -5,4 +5,6 @@ export type TaskFilterOptions = {
   priority?: TaskPriority;
   createdAtFrom?: Date;
   createdAtTo?: Date;
+  dueDateFrom?: Date;
+  dueDateTo?: Date;
 };

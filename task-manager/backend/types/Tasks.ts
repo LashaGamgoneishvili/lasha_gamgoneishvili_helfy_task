@@ -8,6 +8,7 @@ export type Task = {
   description: string;
   completed: boolean;
   createdAt: Date;
+  dueDate?: Date;
   priority: TaskPriority;
 };
 
@@ -17,6 +18,8 @@ export type GetAllTasksInput = {
   priority?: TaskPriority;
   createdAtFrom?: Date;
   createdAtTo?: Date;
+  dueDateFrom?: Date;
+  dueDateTo?: Date;
   sortBy?: TaskSortField;
   sortOrder?: TaskSortOrder;
 };

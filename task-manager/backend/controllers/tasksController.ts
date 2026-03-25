@@ -27,6 +27,8 @@ export const getAllTasks = async (req: Request, res: Response) => {
     priority: data.priority,
     createdAtFrom: data.createdAtFrom,
     createdAtTo: data.createdAtTo,
+    dueDateFrom: data.dueDateFrom,
+    dueDateTo: data.dueDateTo,
   });
 
   result = sortTasks(result, {
@@ -38,7 +40,7 @@ export const getAllTasks = async (req: Request, res: Response) => {
 };
 
 export const createNewTask = async (req: Request, res: Response) => {
-  const { title, description, priority } = req.body;
+  const { title, description, priority, dueDate } = req.body;
 
   const newTask: Task = {
     id: randomInt(100000000000),
@@ -46,6 +48,7 @@ export const createNewTask = async (req: Request, res: Response) => {
     description,
     priority,
     createdAt: new Date(),
+    dueDate,
     completed: false,
   };
 
@@ -57,7 +60,7 @@ export const createNewTask = async (req: Request, res: Response) => {
 export const updateTask = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const { title, description, priority } = req.body;
+  const { title, description, priority, dueDate } = req.body;
 
   const oldTaskIndex = tasks.findIndex((t) => t.id === Number(id));
 
@@ -65,7 +68,13 @@ export const updateTask = async (req: Request, res: Response) => {
     return res.status(404).json({ msg: "Task not found!" });
   }
 
-  const newTask = { ...tasks[oldTaskIndex], title, description, priority };
+  const newTask = {
+    ...tasks[oldTaskIndex],
+    title,
+    description,
+    priority,
+    dueDate,
+  };
 
   tasks[oldTaskIndex] = newTask;
 

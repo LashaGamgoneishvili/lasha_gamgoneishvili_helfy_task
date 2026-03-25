@@ -1,6 +1,11 @@
 import { Task } from "./Tasks";
 
-export type TaskSortField = "id" | "title" | "createdAt" | "priority";
+export type TaskSortField =
+  | "id"
+  | "title"
+  | "createdAt"
+  | "priority"
+  | "dueDate";
 export type TaskSortOrder = "asc" | "desc";
 
 export type TaskSortOptions = {
