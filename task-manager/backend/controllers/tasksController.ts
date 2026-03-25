@@ -10,9 +10,6 @@ export const getAllTasks = async (_req: Request, res: Response) => {
 
 export const createNewTask = async (req: Request, res: Response) => {
   const { title, description, priority } = req.body;
-  if (!title || !description || !priority) {
-    return res.status(400).json({ msg: "Insufficient parameters!" });
-  }
 
   const newTask: Task = {
     id: randomInt(100000000000),
@@ -30,14 +27,8 @@ export const createNewTask = async (req: Request, res: Response) => {
 
 export const updateTask = async (req: Request, res: Response) => {
   const { id } = req.params;
-  if (isNaN(Number(id))) {
-    return res.status(400).json({ msg: "Invalid id format!" });
-  }
 
   const { title, description, priority } = req.body;
-  if (!title || !description || !priority) {
-    return res.status(400).json({ msg: "Insufficient parameters!" });
-  }
 
   const oldTaskIndex = tasks.findIndex((t) => t.id === Number(id));
 
@@ -54,43 +45,29 @@ export const updateTask = async (req: Request, res: Response) => {
 
 export const deleteTask = async (req: Request, res: Response) => {
   const { id } = req.params;
-  if (isNaN(Number(id))) {
-    return res.status(400).json({ msg: "Invalid id format!" });
+
+  const index = tasks.findIndex((task) => task.id === Number(id));
+
+  if (index === -1) {
+    return res.status(404).json({ msg: "Task not found!" });
   }
 
-  for (let i = 0; i < tasks.length; i++) {
-    const task = tasks[i];
-
-    if (task.id === Number(id)) {
-      tasks.splice(i, 1);
-      break;
-    }
-
-    if (i === tasks.length - 1) {
-      return res.status(404).json({ msg: "Task not found!" });
-    }
-  }
+  tasks.splice(index, 1);
 
   return res.status(204).send();
 };
 
 export const toggleTaskStatus = async (req: Request, res: Response) => {
   const { id } = req.params;
-  if (isNaN(Number(id))) {
-    return res.status(400).json({ msg: "Invalid id format!" });
-  }
 
   const { completed } = req.body;
-
-  if (typeof completed !== "boolean") {
-    return res.status(400).json({ msg: "Status must be a boolean value!" });
-  }
 
   const oldTaskIndex = tasks.findIndex((t) => t.id === Number(id));
 
   if (oldTaskIndex === -1) {
     return res.status(404).json({ msg: "Task not found!" });
   }
+
   if (tasks[oldTaskIndex].completed === completed) {
     return res.status(204).send();
   }
