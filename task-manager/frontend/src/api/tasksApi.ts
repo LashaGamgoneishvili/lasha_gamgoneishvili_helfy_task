@@ -5,6 +5,7 @@ import type {
   FetchTasksParams,
   UpdateTaskPayload,
 } from "../types/TasksApi";
+export type { FetchTasksParams } from "../types/TasksApi";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const TASKS_API_URL = `${API_BASE_URL}/api/tasks`;

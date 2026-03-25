@@ -1,5 +1,5 @@
 import React from "react";
-import { LogoIcon, MoonIcon, SunIcon } from "../Icons";
+import { LogoIcon, MoonIcon, SunIcon } from "../../icons";
 
 interface AppHeaderStats {
   total: number;
@@ -13,7 +13,10 @@ interface AppHeaderSectionProps {
   stats: AppHeaderStats;
 }
 
-const StatItem: React.FC<{ label: string; value: number }> = ({ label, value }) => (
+const StatItem: React.FC<{ label: string; value: number }> = ({
+  label,
+  value,
+}) => (
   <div className="stat-item">
     <span className="stat-value">{value}</span>
     <span className="stat-label">{label}</span>

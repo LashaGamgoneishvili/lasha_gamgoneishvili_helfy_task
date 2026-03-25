@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "../Icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "../../icons";
 
 interface TaskSliderHeaderProps {
   currentIndex: number;

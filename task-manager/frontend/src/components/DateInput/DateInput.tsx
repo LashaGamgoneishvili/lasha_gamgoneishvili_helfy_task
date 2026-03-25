@@ -1,5 +1,5 @@
 import React from "react";
-import { CalendarIcon } from "../Icons";
+import { CalendarIcon } from "../../icons";
 import "./DateInput.css";
 
 interface DateInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}

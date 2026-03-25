@@ -1,11 +1,13 @@
 import React from "react";
-import { XIcon } from "../Icons";
+import { XIcon } from "../../icons";
 
 interface TaskModalHeaderProps {
   onClose: () => void;
 }
 
-export const TaskModalHeader: React.FC<TaskModalHeaderProps> = ({ onClose }) => (
+export const TaskModalHeader: React.FC<TaskModalHeaderProps> = ({
+  onClose,
+}) => (
   <div className="modal-header">
     <h2>Edit Task</h2>
     <button className="close-btn" onClick={onClose}>

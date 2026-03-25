@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronDownIcon } from "../Icons";
+import { ChevronDownIcon } from "../../icons";
 
 interface CustomSelectTriggerProps {
   label: string;
@@ -19,6 +19,9 @@ export const CustomSelectTrigger: React.FC<CustomSelectTriggerProps> = ({
       {leftIcon && <span className="left-icon-wrapper">{leftIcon}</span>}
       <span className="selected-value">{label}</span>
     </div>
-    <ChevronDownIcon size={16} className={`chevron-icon ${isOpen ? "rotate" : ""}`} />
+    <ChevronDownIcon
+      size={16}
+      className={`chevron-icon ${isOpen ? "rotate" : ""}`}
+    />
   </div>
 );

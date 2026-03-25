@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckIcon, CircleIcon } from "../Icons";
+import { CheckIcon, CircleIcon } from "../../icons";
 import type { Task } from "../../types/Tasks";
 import { TaskDragHandle } from "./TaskDragHandle";
 import { TaskItemActions } from "./TaskItemActions";

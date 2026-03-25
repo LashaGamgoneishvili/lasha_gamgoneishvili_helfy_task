@@ -1,7 +1,7 @@
 import React from "react";
 import { CustomSelect } from "../CustomSelect/CustomSelect";
 import { DateInput } from "../DateInput/DateInput";
-import { XIcon } from "../Icons";
+import { XIcon } from "../../icons";
 import {
   PRIORITY_FILTER_OPTIONS,
   STATUS_FILTER_OPTIONS,
@@ -37,11 +37,9 @@ const DateFilterGroup: React.FC<{
   </div>
 );
 
-export const TaskFiltersExpandedPanel: React.FC<TaskFiltersExpandedPanelProps> = ({
-  filters,
-  onChange,
-  onClear,
-}) => (
+export const TaskFiltersExpandedPanel: React.FC<
+  TaskFiltersExpandedPanelProps
+> = ({ filters, onChange, onClear }) => (
   <div className="filters-expanded">
     <div className="filter-grid">
       <SelectFilterGroup

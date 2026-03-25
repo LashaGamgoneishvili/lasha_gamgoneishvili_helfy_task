@@ -2,7 +2,7 @@ import React from "react";
 import type { TaskPriority } from "../../types/Tasks";
 import { CustomSelect } from "../CustomSelect/CustomSelect";
 import { DateInput } from "../DateInput/DateInput";
-import { PlusIcon } from "../Icons";
+import { PlusIcon } from "../../icons";
 import { TASK_FORM_PRIORITY_OPTIONS } from "./TaskForm.constants";
 
 interface TaskFormDetailsRowProps {

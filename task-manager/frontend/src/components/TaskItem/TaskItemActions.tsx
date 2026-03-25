@@ -1,5 +1,5 @@
 import React from "react";
-import { EditIcon, TrashIcon } from "../Icons";
+import { EditIcon, TrashIcon } from "../../icons";
 import type { Task } from "../../types/Tasks";
 
 interface TaskItemActionsProps {

@@ -1,6 +1,6 @@
 import React from "react";
 import { CustomSelect } from "../CustomSelect/CustomSelect";
-import { FilterIcon, SearchIcon, SortAscIcon } from "../Icons";
+import { FilterIcon, SearchIcon, SortAscIcon } from "../../icons";
 import { SORT_OPTIONS } from "./TaskFilters.constants";
 import type { SortOption } from "./TaskFilters.types";
 
@@ -62,7 +62,9 @@ const FilterToggleButton: React.FC<{
   </button>
 );
 
-export const TaskFiltersMainControls: React.FC<TaskFiltersMainControlsProps> = ({
+export const TaskFiltersMainControls: React.FC<
+  TaskFiltersMainControlsProps
+> = ({
   localSearch,
   sortBy,
   isExpanded,

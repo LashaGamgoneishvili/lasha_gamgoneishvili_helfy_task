@@ -1,5 +1,5 @@
 import React from "react";
-import { TrashIcon, XIcon } from "../Icons";
+import { TrashIcon, XIcon } from "../../icons";
 
 interface ConfirmModalHeaderProps {
   title: string;
