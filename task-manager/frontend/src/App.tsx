@@ -33,6 +33,10 @@ const INITIAL_FILTERS: FilterState = {
 };
 
 export default function App() {
+  const [cachedTasks] = useState<Task[]>(() =>
+    parseStoredTasks(localStorage.getItem("tasks"))
+  );
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
     return (
@@ -41,11 +45,12 @@ export default function App() {
     );
   });
 
-  const [tasks, setTasks] = useState<Task[]>(() =>
-    parseStoredTasks(localStorage.getItem("tasks"))
-  );
+  const [tasks, setTasks] = useState<Task[]>(cachedTasks);
   const [remoteFilteredTasks, setRemoteFilteredTasks] = useState<Task[] | null>(
     null
+  );
+  const [isInitialTasksLoading, setIsInitialTasksLoading] = useState(
+    cachedTasks.length === 0
   );
   const [queryRefreshKey, setQueryRefreshKey] = useState(0);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -79,6 +84,10 @@ export default function App() {
         }
       } catch (error) {
         console.error("Failed to load tasks from API. Using local cache.", error);
+      } finally {
+        if (isActive) {
+          setIsInitialTasksLoading(false);
+        }
       }
     };
 
@@ -277,6 +286,7 @@ export default function App() {
 
         <TaskListSection
           tasks={displayedTasks}
+          isInitialLoading={isInitialTasksLoading}
           filters={filters}
           sortBy={sortBy}
           onFilterChange={setFilters}

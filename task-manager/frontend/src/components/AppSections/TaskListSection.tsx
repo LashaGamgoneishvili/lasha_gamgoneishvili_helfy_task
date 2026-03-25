@@ -7,6 +7,7 @@ import type { Task } from "../../types";
 
 interface TaskListSectionProps {
   tasks: Task[];
+  isInitialLoading: boolean;
   filters: FilterState;
   sortBy: SortOption;
   onFilterChange: (filters: FilterState) => void;
@@ -26,10 +27,19 @@ const TaskResultsHeader: React.FC<{ taskCount: number }> = ({ taskCount }) => (
 
 const TaskCarouselView: React.FC<{
   tasks: Task[];
+  isInitialLoading: boolean;
   onToggleTask: (id: number) => void;
   onDeleteTask: (id: number) => void;
   onEditTask: (task: Task) => void;
-}> = ({ tasks, onToggleTask, onDeleteTask, onEditTask }) => {
+}> = ({ tasks, isInitialLoading, onToggleTask, onDeleteTask, onEditTask }) => {
+  if (isInitialLoading) {
+    return (
+      <div className="empty-state">
+        <p>Loading tasks...</p>
+      </div>
+    );
+  }
+
   if (tasks.length === 0) {
     return (
       <div className="empty-state">
@@ -71,6 +81,7 @@ const TaskBackupList: React.FC<{
 
 export const TaskListSection: React.FC<TaskListSectionProps> = ({
   tasks,
+  isInitialLoading,
   filters,
   sortBy,
   onFilterChange,
@@ -92,6 +103,7 @@ export const TaskListSection: React.FC<TaskListSectionProps> = ({
 
     <TaskCarouselView
       tasks={tasks}
+      isInitialLoading={isInitialLoading}
       onToggleTask={onToggleTask}
       onDeleteTask={onDeleteTask}
       onEditTask={onEditTask}
