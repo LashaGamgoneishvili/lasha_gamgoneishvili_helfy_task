@@ -1,0 +1,229 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+  will-change: opacity;
+}
+
+.modal-overlay.is-open {
+  animation: overlay-fade-in 220ms ease-out both;
+}
+
+.modal-overlay.is-closing {
+  animation: overlay-fade-out 220ms ease-in both;
+}
+
+.confirm-modal {
+  background: var(--card-bg);
+  width: 100%;
+  max-width: 400px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  animation: modal-pop-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.modal-overlay.is-closing .confirm-modal {
+  animation: modal-pop-out 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.confirm-header {
+  padding: 1.5rem 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.warning-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--priority-high-bg);
+  color: var(--danger-color);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.confirm-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.confirm-header .close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.confirm-header .close-btn:hover {
+  background: var(--bg-color);
+  color: var(--text-primary);
+}
+
+.confirm-body {
+  padding: 0 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.confirm-body p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.confirm-footer {
+  padding: 1rem 1.5rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.cancel-btn {
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: var(--border-color);
+}
+
+.confirm-delete-btn {
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: none;
+  background: var(--danger-color);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.confirm-delete-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlay-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modal-pop-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay.is-open,
+  .modal-overlay.is-closing,
+  .confirm-modal,
+  .modal-overlay.is-closing .confirm-modal {
+    animation-duration: 1ms;
+  }
+}
+
+@media (max-width: 640px) {
+  .confirm-modal {
+    max-width: 320px;
+    border-radius: 16px;
+  }
+
+  .confirm-header {
+    padding: 1.25rem 1.25rem 0.75rem;
+  }
+
+  .warning-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0.75rem;
+  }
+
+  .confirm-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .confirm-body p {
+    font-size: 0.85rem;
+  }
+
+  .confirm-footer {
+    padding: 0.75rem 1.25rem 1.25rem;
+    gap: 0.5rem;
+  }
+
+  .cancel-btn,
+  .confirm-delete-btn {
+    padding: 0.65rem;
+    font-size: 0.85rem;
+  }
+}

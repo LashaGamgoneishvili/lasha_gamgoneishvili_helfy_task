@@ -1,121 +1,149 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useMemo, useState } from "react";
+import type { FilterState, SortOption } from "./components/TaskFilters/TaskFilters";
+import { ConfirmModal } from "./components/ConfirmModal/ConfirmModal";
+import { TaskModal } from "./components/TaskModal/TaskModal";
+import { AppHeaderSection } from "./components/AppSections/AppHeaderSection";
+import { TaskCreationSection } from "./components/AppSections/TaskCreationSection";
+import { TaskListSection } from "./components/AppSections/TaskListSection";
+import { MOCK_TASKS } from "./constants/mockTasks";
+import type { Task, TaskPriority } from "./types";
+import {
+  buildNewTask,
+  filterTasks,
+  getTaskStats,
+  parseStoredTasks,
+  sortTasks,
+} from "./utils/taskAppUtils";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const INITIAL_FILTERS: FilterState = {
+  search: "",
+  status: "all",
+  priority: "all",
+  createdFrom: "",
+  createdTo: "",
+  dueFrom: "",
+  dueTo: "",
+};
+
+export default function App() {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return (
+      savedTheme === "dark" ||
+      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    );
+  });
+
+  const [tasks, setTasks] = useState<Task[]>(() =>
+    parseStoredTasks(localStorage.getItem("tasks"), MOCK_TASKS)
+  );
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [deletingTaskId, setDeletingTaskId] = useState<number | null>(null);
+  const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
+  const [sortBy, setSortBy] = useState<SortOption>("createdAt-desc");
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      return;
+    }
+
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  const handleAddTask = (
+    title: string,
+    description: string,
+    priority: TaskPriority,
+    dueDate?: Date
+  ) => {
+    const newTask = buildNewTask(title, description, priority, dueDate);
+    setTasks((prevTasks) => [newTask, ...prevTasks]);
+  };
+
+  const handleToggleTask = (id: number) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  const handleConfirmDelete = (id: number) => {
+    setDeletingTaskId(id);
+  };
+
+  const handleDeleteTask = () => {
+    if (deletingTaskId === null) return;
+
+    setTasks((prevTasks) =>
+      prevTasks.filter((task) => task.id !== deletingTaskId)
+    );
+    setDeletingTaskId(null);
+  };
+
+  const handleUpdateTask = (updatedTask: Task) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+  };
+
+  const handleReorderTasks = (newTasks: Task[]) => {
+    setTasks(newTasks);
+  };
+
+  const filteredAndSortedTasks = useMemo(() => {
+    const filteredTasks = filterTasks(tasks, filters);
+    return sortTasks(filteredTasks, sortBy);
+  }, [tasks, filters, sortBy]);
+
+  const stats = useMemo(() => getTaskStats(tasks), [tasks]);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app-container">
+      <AppHeaderSection
+        isDarkMode={isDarkMode}
+        onToggleTheme={() => setIsDarkMode((prev) => !prev)}
+        stats={stats}
+      />
 
-      <div className="ticks"></div>
+      <main className="app-main">
+        <TaskCreationSection onAddTask={handleAddTask} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <TaskListSection
+          tasks={filteredAndSortedTasks}
+          filters={filters}
+          sortBy={sortBy}
+          onFilterChange={setFilters}
+          onSortChange={setSortBy}
+          onToggleTask={handleToggleTask}
+          onDeleteTask={handleConfirmDelete}
+          onEditTask={setEditingTask}
+          onReorderTasks={handleReorderTasks}
+        />
+      </main>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <TaskModal
+        isOpen={!!editingTask}
+        onClose={() => setEditingTask(null)}
+        task={editingTask}
+        onSave={handleUpdateTask}
+      />
+
+      <ConfirmModal
+        isOpen={deletingTaskId !== null}
+        onClose={() => setDeletingTaskId(null)}
+        onConfirm={handleDeleteTask}
+        title="Delete Task"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+      />
+    </div>
+  );
 }
-
-export default App

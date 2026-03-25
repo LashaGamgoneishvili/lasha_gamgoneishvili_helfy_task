@@ -1,0 +1,57 @@
+.date-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.date-input {
+  width: 100%;
+  padding: 0.6rem 2.5rem 0.6rem 0.75rem;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.date-input:focus {
+  border-color: var(--accent-color);
+}
+
+.date-input-icon {
+  position: absolute;
+  right: 0.75rem;
+  color: var(--text-secondary);
+  pointer-events: none; /* Let clicks pass through to the input */
+  transition: color 0.2s ease;
+}
+
+.date-input:focus + .date-input-icon {
+  color: var(--accent-color);
+}
+
+/* Hide the native calendar icon */
+.date-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  color: transparent;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Ensure text is visible in dark mode */
+.dark .date-input::-webkit-datetime-edit-text,
+.dark .date-input::-webkit-datetime-edit-month-field,
+.dark .date-input::-webkit-datetime-edit-day-field,
+.dark .date-input::-webkit-datetime-edit-year-field {
+  color: var(--text-primary);
+}
