@@ -2,12 +2,13 @@ import React from "react";
 import type { TaskPriority } from "../../types/Tasks";
 import { CustomSelect } from "../CustomSelect/CustomSelect";
 import { DateInput } from "../DateInput/DateInput";
-import { PlusIcon } from "../../icons";
 import { TASK_FORM_PRIORITY_OPTIONS } from "./TaskForm.constants";
 
 interface TaskFormDetailsRowProps {
   priority: TaskPriority;
   dueDate: string;
+  priorityError?: string;
+  dueDateError?: string;
   onPriorityChange: (priority: TaskPriority) => void;
   onDueDateChange: (value: string) => void;
 }
@@ -15,6 +16,8 @@ interface TaskFormDetailsRowProps {
 export const TaskFormDetailsRow: React.FC<TaskFormDetailsRowProps> = ({
   priority,
   dueDate,
+  priorityError,
+  dueDateError,
   onPriorityChange,
   onDueDateChange,
 }) => (
@@ -25,7 +28,11 @@ export const TaskFormDetailsRow: React.FC<TaskFormDetailsRowProps> = ({
         value={priority}
         options={TASK_FORM_PRIORITY_OPTIONS}
         onChange={(value) => onPriorityChange(value as TaskPriority)}
+        className={priorityError ? "field-input-error" : ""}
       />
+      {priorityError && (
+        <span className="field-error-text">{priorityError}</span>
+      )}
     </div>
 
     <div className="form-group">
@@ -33,12 +40,9 @@ export const TaskFormDetailsRow: React.FC<TaskFormDetailsRowProps> = ({
       <DateInput
         value={dueDate}
         onChange={(e) => onDueDateChange(e.target.value)}
+        className={dueDateError ? "field-input-error" : ""}
       />
+      {dueDateError && <span className="field-error-text">{dueDateError}</span>}
     </div>
-
-    <button type="submit" className="add-btn">
-      <PlusIcon size={20} />
-      Add Task
-    </button>
   </div>
 );

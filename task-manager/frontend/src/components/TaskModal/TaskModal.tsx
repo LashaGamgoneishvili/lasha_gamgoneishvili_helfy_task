@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import type { TaskFormErrors } from "../../types/FormErrors";
 import type { Task, TaskPriority } from "../../types/Tasks";
 import { TaskModalActions } from "./TaskModalActions";
 import { TASK_MODAL_EXIT_ANIMATION_MS } from "./TaskModal.constants";
@@ -10,7 +11,8 @@ interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   task: Task | null;
-  onSave: (updatedTask: Task) => void;
+  onSave: (updatedTask: Task) => Promise<boolean>;
+  errors: TaskFormErrors;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
@@ -18,6 +20,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   onClose,
   task,
   onSave,
+  errors,
 }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -55,18 +58,21 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     );
   }, [task]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!task) return;
 
-    onSave({
+    const saved = await onSave({
       ...task,
       title,
       description,
       priority,
       dueDate: dueDate ? new Date(dueDate) : undefined,
     });
-    onClose();
+
+    if (saved) {
+      onClose();
+    }
   };
 
   if (!isRendered) return null;
@@ -83,6 +89,10 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             description={description}
             priority={priority}
             dueDate={dueDate}
+            titleError={errors.title}
+            descriptionError={errors.description}
+            priorityError={errors.priority}
+            dueDateError={errors.dueDate}
             onTitleChange={setTitle}
             onDescriptionChange={setDescription}
             onPriorityChange={setPriority}

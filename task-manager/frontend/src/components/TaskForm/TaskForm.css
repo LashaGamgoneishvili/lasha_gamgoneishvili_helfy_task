@@ -54,6 +54,17 @@
   border-color: var(--accent-color);
 }
 
+.field-input-error {
+  border-color: var(--danger-color) !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.12);
+}
+
+.field-error-text {
+  font-size: 0.75rem;
+  color: var(--danger-color);
+  line-height: 1.2;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
@@ -62,6 +73,8 @@
 }
 
 .add-btn {
+  width: 140px;
+  margin-left: auto;
   background: var(--accent-color);
   color: white;
   border: none;
@@ -100,7 +113,7 @@
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
-  
+
   .add-btn {
     width: 100%;
     justify-content: center;

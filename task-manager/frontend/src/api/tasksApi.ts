@@ -1,14 +1,20 @@
 import type { Task } from "../types/Tasks";
-import type {
-  ApiTask,
-  CreateTaskPayload,
-  FetchTasksParams,
-  UpdateTaskPayload,
+import {
+  ApiRequestError,
+  type ApiErrorResponse,
+  type ApiFieldValidationError,
+  type ApiTask,
+  type CreateTaskPayload,
+  type FetchTasksParams,
+  type UpdateTaskPayload,
 } from "../types/TasksApi";
 export type { FetchTasksParams } from "../types/TasksApi";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const TASKS_API_URL = `${API_BASE_URL}/api/tasks`;
+
+export const isApiRequestError = (error: unknown): error is ApiRequestError =>
+  error instanceof ApiRequestError;
 
 const toTask = (apiTask: ApiTask): Task => ({
   ...apiTask,
@@ -28,11 +34,20 @@ const request = async <T>(
 
   if (!response.ok) {
     let message = `Request failed with status ${response.status}`;
+    let errors: ApiFieldValidationError[] = [];
+
     try {
-      const data = (await response.json()) as { msg?: string };
+      const data = (await response.json()) as ApiErrorResponse;
       if (data.msg) message = data.msg;
+      if (Array.isArray(data.errors)) {
+        errors = data.errors.filter(
+          (item): item is ApiFieldValidationError =>
+            typeof item?.field === "string" && typeof item?.msg === "string",
+        );
+      }
     } catch {}
-    throw new Error(message);
+
+    throw new ApiRequestError(response.status, message, errors);
   }
 
   if (response.status === 204) {

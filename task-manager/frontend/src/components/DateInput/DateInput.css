@@ -22,6 +22,11 @@
   border-color: var(--accent-color);
 }
 
+.date-input.field-input-error {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.12);
+}
+
 .date-input-icon {
   position: absolute;
   right: 0.75rem;

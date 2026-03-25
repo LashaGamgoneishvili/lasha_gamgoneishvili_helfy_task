@@ -36,3 +36,29 @@ export type UpdateTaskPayload = {
   priority: TaskPriority;
   dueDate?: Date;
 };
+
+export type ApiFieldValidationError = {
+  field: string;
+  msg: string;
+};
+
+export type ApiErrorResponse = {
+  msg?: string;
+  errors?: ApiFieldValidationError[];
+};
+
+export class ApiRequestError extends Error {
+  status: number;
+  errors: ApiFieldValidationError[];
+
+  constructor(
+    status: number,
+    message: string,
+    errors: ApiFieldValidationError[],
+  ) {
+    super(message);
+    this.name = "ApiRequestError";
+    this.status = status;
+    this.errors = errors;
+  }
+}

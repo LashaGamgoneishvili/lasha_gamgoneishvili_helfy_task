@@ -44,6 +44,11 @@
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
+.custom-select-container.field-input-error .custom-select-trigger {
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.12);
+}
+
 .selected-value {
   white-space: nowrap;
   overflow: hidden;
