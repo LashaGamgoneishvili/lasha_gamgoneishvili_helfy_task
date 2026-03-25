@@ -41,6 +41,10 @@ export const updateTask = async (req: Request, res: Response) => {
 
   const oldTaskIndex = tasks.findIndex((t) => t.id === Number(id));
 
+  if (oldTaskIndex === -1) {
+    return res.status(404).json({ msg: "Task not found!" });
+  }
+
   const newTask = { ...tasks[oldTaskIndex], title, description, priority };
 
   tasks[oldTaskIndex] = newTask;
@@ -61,6 +65,10 @@ export const deleteTask = async (req: Request, res: Response) => {
       tasks.splice(i, 1);
       break;
     }
+
+    if (i === tasks.length - 1) {
+      return res.status(404).json({ msg: "Task not found!" });
+    }
   }
 
   return res.status(204).send();
@@ -80,6 +88,9 @@ export const toggleTaskStatus = async (req: Request, res: Response) => {
 
   const oldTaskIndex = tasks.findIndex((t) => t.id === Number(id));
 
+  if (oldTaskIndex === -1) {
+    return res.status(404).json({ msg: "Task not found!" });
+  }
   if (tasks[oldTaskIndex].completed === completed) {
     return res.status(204).send();
   }
