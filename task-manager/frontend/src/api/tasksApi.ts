@@ -1,41 +1,10 @@
-import type { Task, TaskPriority } from "../types";
-
-type ApiTask = {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
-  createdAt: string | Date;
-  dueDate?: string | Date;
-  priority: TaskPriority;
-};
-
-export type FetchTasksParams = {
-  search?: string;
-  completed?: boolean;
-  priority?: TaskPriority;
-  createdAtFrom?: string;
-  createdAtTo?: string;
-  dueDateFrom?: string;
-  dueDateTo?: string;
-  sortBy?: "id" | "title" | "createdAt" | "priority" | "dueDate";
-  sortOrder?: "asc" | "desc";
-};
-
-type CreateTaskPayload = {
-  title: string;
-  description: string;
-  priority: TaskPriority;
-  dueDate?: Date;
-};
-
-type UpdateTaskPayload = {
-  id: number;
-  title: string;
-  description: string;
-  priority: TaskPriority;
-  dueDate?: Date;
-};
+import type { Task } from "../types/Tasks";
+import type {
+  ApiTask,
+  CreateTaskPayload,
+  FetchTasksParams,
+  UpdateTaskPayload,
+} from "../types/TasksApi";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const TASKS_API_URL = `${API_BASE_URL}/api/tasks`;
@@ -50,7 +19,10 @@ const toJsonHeaders = {
   "Content-Type": "application/json",
 };
 
-const request = async <T>(input: RequestInfo, init?: RequestInit): Promise<T> => {
+const request = async <T>(
+  input: RequestInfo,
+  init?: RequestInit,
+): Promise<T> => {
   const response = await fetch(input, init);
 
   if (!response.ok) {
@@ -58,9 +30,7 @@ const request = async <T>(input: RequestInfo, init?: RequestInit): Promise<T> =>
     try {
       const data = (await response.json()) as { msg?: string };
       if (data.msg) message = data.msg;
-    } catch {
-      // Ignore JSON parsing errors for non-JSON responses.
-    }
+    } catch {}
     throw new Error(message);
   }
 
@@ -83,8 +53,12 @@ const buildQueryString = (params: FetchTasksParams = {}): string => {
   return result ? `?${result}` : "";
 };
 
-export const fetchTasks = async (params: FetchTasksParams = {}): Promise<Task[]> => {
-  const data = await request<ApiTask[]>(`${TASKS_API_URL}${buildQueryString(params)}`);
+export const fetchTasks = async (
+  params: FetchTasksParams = {},
+): Promise<Task[]> => {
+  const data = await request<ApiTask[]>(
+    `${TASKS_API_URL}${buildQueryString(params)}`,
+  );
   return data.map(toTask);
 };
 
@@ -103,7 +77,9 @@ export const createTask = async (payload: CreateTaskPayload): Promise<Task> => {
   return toTask(data);
 };
 
-export const updateTaskById = async (payload: UpdateTaskPayload): Promise<Task> => {
+export const updateTaskById = async (
+  payload: UpdateTaskPayload,
+): Promise<Task> => {
   const data = await request<ApiTask>(`${TASKS_API_URL}/${payload.id}`, {
     method: "PUT",
     headers: toJsonHeaders,
@@ -126,13 +102,16 @@ export const deleteTaskById = async (id: number): Promise<void> => {
 
 export const toggleTaskStatus = async (
   id: number,
-  completed: boolean
+  completed: boolean,
 ): Promise<Task | null> => {
-  const data = await request<ApiTask | undefined>(`${TASKS_API_URL}/${id}/toggle`, {
-    method: "PATCH",
-    headers: toJsonHeaders,
-    body: JSON.stringify({ completed }),
-  });
+  const data = await request<ApiTask | undefined>(
+    `${TASKS_API_URL}/${id}/toggle`,
+    {
+      method: "PATCH",
+      headers: toJsonHeaders,
+      body: JSON.stringify({ completed }),
+    },
+  );
 
   return data ? toTask(data) : null;
 };

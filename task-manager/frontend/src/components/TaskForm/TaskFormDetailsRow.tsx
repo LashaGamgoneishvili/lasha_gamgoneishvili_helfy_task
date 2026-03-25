@@ -1,5 +1,5 @@
 import React from "react";
-import type { TaskPriority } from "../../types";
+import type { TaskPriority } from "../../types/Tasks";
 import { CustomSelect } from "../CustomSelect/CustomSelect";
 import { DateInput } from "../DateInput/DateInput";
 import { PlusIcon } from "../Icons";
@@ -30,7 +30,10 @@ export const TaskFormDetailsRow: React.FC<TaskFormDetailsRowProps> = ({
 
     <div className="form-group">
       <label>Due Date</label>
-      <DateInput value={dueDate} onChange={(e) => onDueDateChange(e.target.value)} />
+      <DateInput
+        value={dueDate}
+        onChange={(e) => onDueDateChange(e.target.value)}
+      />
     </div>
 
     <button type="submit" className="add-btn">

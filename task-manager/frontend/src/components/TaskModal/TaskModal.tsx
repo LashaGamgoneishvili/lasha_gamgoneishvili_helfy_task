@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { Task, TaskPriority } from "../../types";
+import type { Task, TaskPriority } from "../../types/Tasks";
 import { TaskModalActions } from "./TaskModalActions";
 import { TASK_MODAL_EXIT_ANIMATION_MS } from "./TaskModal.constants";
 import { TaskModalFormFields } from "./TaskModalFormFields";
@@ -51,7 +51,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     setDescription(task.description);
     setPriority(task.priority);
     setDueDate(
-      task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : ""
+      task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
     );
   }, [task]);
 

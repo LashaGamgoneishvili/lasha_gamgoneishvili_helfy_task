@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import type { FilterState, SortOption } from "./components/TaskFilters/TaskFilters";
+import type {
+  FilterState,
+  SortOption,
+} from "./components/TaskFilters/TaskFilters";
 import { ConfirmModal } from "./components/ConfirmModal/ConfirmModal";
 import { TaskModal } from "./components/TaskModal/TaskModal";
 import { AppHeaderSection } from "./components/AppSections/AppHeaderSection";
@@ -12,7 +15,7 @@ import {
   toggleTaskStatus,
   updateTaskById,
 } from "./api/tasksApi";
-import type { Task, TaskPriority } from "./types";
+import type { Task, TaskPriority } from "./types/Tasks";
 import { buildFetchTasksParams } from "./utils/taskApiQuery";
 import {
   filterTasks,
@@ -34,7 +37,7 @@ const INITIAL_FILTERS: FilterState = {
 
 export default function App() {
   const [cachedTasks] = useState<Task[]>(() =>
-    parseStoredTasks(localStorage.getItem("tasks"))
+    parseStoredTasks(localStorage.getItem("tasks")),
   );
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -47,10 +50,10 @@ export default function App() {
 
   const [tasks, setTasks] = useState<Task[]>(cachedTasks);
   const [remoteFilteredTasks, setRemoteFilteredTasks] = useState<Task[] | null>(
-    null
+    null,
   );
   const [isInitialTasksLoading, setIsInitialTasksLoading] = useState(
-    cachedTasks.length === 0
+    cachedTasks.length === 0,
   );
   const [queryRefreshKey, setQueryRefreshKey] = useState(0);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -83,7 +86,10 @@ export default function App() {
           setTasks(remoteTasks);
         }
       } catch (error) {
-        console.error("Failed to load tasks from API. Using local cache.", error);
+        console.error(
+          "Failed to load tasks from API. Using local cache.",
+          error,
+        );
       } finally {
         if (isActive) {
           setIsInitialTasksLoading(false);
@@ -106,7 +112,7 @@ export default function App() {
 
       try {
         const remoteTasks = await fetchTasks(
-          buildFetchTasksParams(filters, sortBy)
+          buildFetchTasksParams(filters, sortBy),
         );
         if (isActive) {
           setRemoteFilteredTasks(remoteTasks);
@@ -117,7 +123,7 @@ export default function App() {
         }
         console.error(
           "Failed to load filtered/sorted tasks from API. Using local filtering.",
-          error
+          error,
         );
       }
     };
@@ -133,7 +139,7 @@ export default function App() {
     title: string,
     description: string,
     priority: TaskPriority,
-    dueDate?: Date
+    dueDate?: Date,
   ) => {
     const optimisticTask: Task = {
       id: -Date.now(),
@@ -157,13 +163,13 @@ export default function App() {
 
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task.id === optimisticTask.id ? createdTask : task
-        )
+          task.id === optimisticTask.id ? createdTask : task,
+        ),
       );
       setQueryRefreshKey((prev) => prev + 1);
     } catch (error) {
       setTasks((prevTasks) =>
-        prevTasks.filter((task) => task.id !== optimisticTask.id)
+        prevTasks.filter((task) => task.id !== optimisticTask.id),
       );
       console.error("Failed to create task.", error);
     }
@@ -177,8 +183,8 @@ export default function App() {
 
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: nextCompleted } : task
-      )
+        task.id === id ? { ...task, completed: nextCompleted } : task,
+      ),
     );
 
     try {
@@ -189,14 +195,16 @@ export default function App() {
       }
 
       setTasks((prevTasks) =>
-        prevTasks.map((task) => (task.id === id ? updatedTask : task))
+        prevTasks.map((task) => (task.id === id ? updatedTask : task)),
       );
       setQueryRefreshKey((prev) => prev + 1);
     } catch (error) {
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task.id === id ? { ...task, completed: existingTask.completed } : task
-        )
+          task.id === id
+            ? { ...task, completed: existingTask.completed }
+            : task,
+        ),
       );
       console.error("Failed to toggle task status.", error);
     }
@@ -210,11 +218,13 @@ export default function App() {
     if (deletingTaskId === null) return;
 
     const taskIdToDelete = deletingTaskId;
-    const deletedTaskIndex = tasks.findIndex((task) => task.id === taskIdToDelete);
+    const deletedTaskIndex = tasks.findIndex(
+      (task) => task.id === taskIdToDelete,
+    );
     const deletedTask = tasks[deletedTaskIndex];
 
     setTasks((prevTasks) =>
-      prevTasks.filter((task) => task.id !== taskIdToDelete)
+      prevTasks.filter((task) => task.id !== taskIdToDelete),
     );
     setDeletingTaskId(null);
 
@@ -242,20 +252,22 @@ export default function App() {
     if (!previousTask) return;
 
     setTasks((prevTasks) =>
-      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+      prevTasks.map((task) =>
+        task.id === updatedTask.id ? updatedTask : task,
+      ),
     );
 
     try {
       const savedTask = await updateTaskById(updatedTask);
       setTasks((prevTasks) =>
-        prevTasks.map((task) => (task.id === savedTask.id ? savedTask : task))
+        prevTasks.map((task) => (task.id === savedTask.id ? savedTask : task)),
       );
       setQueryRefreshKey((prev) => prev + 1);
     } catch (error) {
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task.id === previousTask.id ? previousTask : task
-        )
+          task.id === previousTask.id ? previousTask : task,
+        ),
       );
       console.error("Failed to update task.", error);
     }

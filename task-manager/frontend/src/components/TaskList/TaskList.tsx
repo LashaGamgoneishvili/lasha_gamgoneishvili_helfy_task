@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Task } from "../../types";
+import type { Task } from "../../types/Tasks";
 import { TaskListEmptyState } from "./TaskListEmptyState";
 import { TaskListItems } from "./TaskListItems";
 import "./TaskList.css";
@@ -15,7 +15,7 @@ interface TaskListProps {
 const reorderTasks = (
   tasks: Task[],
   draggedItemId: number,
-  overItemId: number
+  overItemId: number,
 ): Task[] => {
   const draggedItemIndex = tasks.findIndex((task) => task.id === draggedItemId);
   const overItemIndex = tasks.findIndex((task) => task.id === overItemId);

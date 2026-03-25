@@ -1,5 +1,5 @@
 import React from "react";
-import type { Task } from "../../types";
+import type { Task } from "../../types/Tasks";
 import { TaskItem } from "../TaskItem/TaskItem";
 
 interface TaskSliderViewportProps {

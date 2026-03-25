@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { TaskPriority } from "../../types";
+import type { TaskPriority } from "../../types/Tasks";
 import { TaskFormDetailsRow } from "./TaskFormDetailsRow";
 import { TaskFormFields } from "./TaskFormFields";
 import "./TaskForm.css";
@@ -9,7 +9,7 @@ interface TaskFormProps {
     title: string,
     description: string,
     priority: TaskPriority,
-    dueDate?: Date
+    dueDate?: Date,
   ) => void;
 }
 
@@ -23,7 +23,9 @@ const EMPTY_TASK_FORM = {
 export const TaskForm: React.FC<TaskFormProps> = ({ onAdd }) => {
   const [title, setTitle] = useState(EMPTY_TASK_FORM.title);
   const [description, setDescription] = useState(EMPTY_TASK_FORM.description);
-  const [priority, setPriority] = useState<TaskPriority>(EMPTY_TASK_FORM.priority);
+  const [priority, setPriority] = useState<TaskPriority>(
+    EMPTY_TASK_FORM.priority,
+  );
   const [dueDate, setDueDate] = useState(EMPTY_TASK_FORM.dueDate);
 
   const resetForm = () => {
@@ -37,7 +39,12 @@ export const TaskForm: React.FC<TaskFormProps> = ({ onAdd }) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    onAdd(title, description, priority, dueDate ? new Date(dueDate) : undefined);
+    onAdd(
+      title,
+      description,
+      priority,
+      dueDate ? new Date(dueDate) : undefined,
+    );
     resetForm();
   };
 

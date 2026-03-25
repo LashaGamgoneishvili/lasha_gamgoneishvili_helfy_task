@@ -1,5 +1,5 @@
 import React from "react";
-import type { TaskPriority } from "../../types";
+import type { TaskPriority } from "../../types/Tasks";
 import { CustomSelect } from "../CustomSelect/CustomSelect";
 import { DateInput } from "../DateInput/DateInput";
 import { TASK_MODAL_PRIORITY_OPTIONS } from "./TaskModal.constants";
@@ -60,7 +60,10 @@ export const TaskModalFormFields: React.FC<TaskModalFormFieldsProps> = ({
 
       <div className="form-group">
         <label>Due Date</label>
-        <DateInput value={dueDate} onChange={(e) => onDueDateChange(e.target.value)} />
+        <DateInput
+          value={dueDate}
+          onChange={(e) => onDueDateChange(e.target.value)}
+        />
       </div>
     </div>
   </>

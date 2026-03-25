@@ -3,7 +3,7 @@ import { TaskFilters } from "../TaskFilters/TaskFilters";
 import type { FilterState, SortOption } from "../TaskFilters/TaskFilters";
 import { TaskList } from "../TaskList/TaskList";
 import { TaskSlider } from "../TaskSlider/TaskSlider";
-import type { Task } from "../../types";
+import type { Task } from "../../types/Tasks";
 
 interface TaskListSectionProps {
   tasks: Task[];

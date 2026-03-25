@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import type { Task } from "../../types";
+import type { Task } from "../../types/Tasks";
 import { TaskSliderDots } from "./TaskSliderDots";
 import { TaskSliderHeader } from "./TaskSliderHeader";
 import { TaskSliderViewport } from "./TaskSliderViewport";
@@ -63,7 +63,7 @@ export const TaskSlider: React.FC<TaskSliderProps> = ({
       setCurrentIndex(nextIndex);
       setIsAnimating(true);
     },
-    [tasks.length]
+    [tasks.length],
   );
 
   const nextSlide = useCallback(() => {

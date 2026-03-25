@@ -1,4 +1,4 @@
-import type { TaskPriority } from "../../types";
+import type { TaskPriority } from "../../types/Tasks";
 
 export type SortOption =
   | "createdAt-desc"

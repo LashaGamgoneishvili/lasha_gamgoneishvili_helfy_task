@@ -1,6 +1,9 @@
-import type { TaskPriority } from "../../types";
+import type { TaskPriority } from "../../types/Tasks";
 
-export const TASK_FORM_PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
+export const TASK_FORM_PRIORITY_OPTIONS: {
+  value: TaskPriority;
+  label: string;
+}[] = [
   { value: "low", label: "Low" },
   { value: "medium", label: "Medium" },
   { value: "high", label: "High" },

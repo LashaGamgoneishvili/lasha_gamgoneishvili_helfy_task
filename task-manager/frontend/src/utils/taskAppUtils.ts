@@ -1,5 +1,8 @@
-import type { FilterState, SortOption } from "../components/TaskFilters/TaskFilters";
-import type { Task } from "../types";
+import type {
+  FilterState,
+  SortOption,
+} from "../components/TaskFilters/TaskFilters";
+import type { Task } from "../types/Tasks";
 
 const PRIORITY_ORDER: Record<Task["priority"], number> = {
   high: 3,
