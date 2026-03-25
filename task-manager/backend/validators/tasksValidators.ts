@@ -55,8 +55,8 @@ const sortOrderQueryValidator: ValidationChain = query("sortOrder")
 
 const idValidator: ValidationChain = param("id")
   .trim()
-  .isInt({ min: 1 })
-  .withMessage("id must be a positive integer!");
+  .isInt({ min: 0 })
+  .withMessage("id must be a non-negative integer!");
 
 const titleValidator: ValidationChain = body("title")
   .trim()
@@ -82,7 +82,7 @@ const priorityValidator: ValidationChain = body("priority")
 const dueDateValidator: ValidationChain = body("dueDate")
   .optional()
   .isISO8601()
-  .withMessage("dueDateFrom must be a valid ISO date!")
+  .withMessage("dueDate must be a valid ISO date!")
   .toDate();
 
 const completedValidator: ValidationChain = body("completed")
