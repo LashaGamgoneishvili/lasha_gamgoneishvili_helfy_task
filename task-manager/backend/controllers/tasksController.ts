@@ -1,11 +1,40 @@
 import { Request, Response } from "express";
-import { Task } from "../types/Tasks";
+import { GetAllTasksInput, Task } from "../types/Tasks";
 import { randomInt } from "crypto";
+import { fuzzySearch } from "../helpers/fuzzySearch";
+import { matchedData } from "express-validator";
+import { filterTasks } from "../helpers/taskFilter";
+import { sortTasks } from "../helpers/taskSort";
 
 const tasks: Task[] = [];
 
-export const getAllTasks = async (_req: Request, res: Response) => {
-  return res.status(200).json(tasks);
+export const getAllTasks = async (req: Request, res: Response) => {
+  const data = matchedData(req, {
+    locations: ["params", "query"],
+    includeOptionals: true,
+  }) as GetAllTasksInput;
+
+  let result = data.search
+    ? fuzzySearch(tasks, data.search, {
+        extractor: (task) => [task.title, task.description, task.priority],
+        threshold: 0.35,
+        limit: tasks.length,
+      }).map((x) => x.item)
+    : [...tasks];
+
+  result = filterTasks(result, {
+    completed: data.completed,
+    priority: data.priority,
+    createdAtFrom: data.createdAtFrom,
+    createdAtTo: data.createdAtTo,
+  });
+
+  result = sortTasks(result, {
+    sortBy: data.sortBy,
+    sortOrder: data.sortOrder,
+  });
+
+  return res.status(200).json(result);
 };
 
 export const createNewTask = async (req: Request, res: Response) => {

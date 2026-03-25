@@ -1,4 +1,43 @@
-import { body, param, ValidationChain } from "express-validator";
+import { body, param, query, ValidationChain } from "express-validator";
+
+const searchValidator: ValidationChain = param("search")
+  .optional()
+  .trim()
+  .isString()
+  .withMessage("search must be a string!");
+
+const completedQueryValidator: ValidationChain = query("completed")
+  .optional()
+  .isBoolean()
+  .withMessage("completed must a boolean value!")
+  .toBoolean();
+
+const priorityQueryValidator: ValidationChain = query("priority")
+  .optional()
+  .isIn(["low", "medium", "high"])
+  .withMessage("priority must be one of: low, medium, high!");
+
+const createdAtFromQueryValidator: ValidationChain = query("createdAtFrom")
+  .optional()
+  .isISO8601()
+  .withMessage("createdAtFrom must be a valid ISO date!")
+  .toDate();
+
+const createdAtToQueryValidator: ValidationChain = query("createdAtTo")
+  .optional()
+  .isISO8601()
+  .withMessage("createdAtTo must be a valid ISO date!")
+  .toDate();
+
+const sortByQueryValidator: ValidationChain = query("sortBy")
+  .optional()
+  .isIn(["id", "title", "createdAt", "priority"])
+  .withMessage("sortBy must be one of: id, title, createdAt, priority!");
+
+const sortOrderQueryValidator: ValidationChain = query("sortOrder")
+  .optional()
+  .isIn(["asc", "desc"])
+  .withMessage("sortOrder must be asc or desc!");
 
 const idValidator: ValidationChain = param("id")
   .trim()
@@ -24,7 +63,7 @@ const priorityValidator: ValidationChain = body("priority")
   .notEmpty()
   .withMessage("priority is required")
   .isIn(["low", "medium", "high"])
-  .withMessage("priority can only be one of: low , medium , high");
+  .withMessage("priority can only be one of: low , medium , high!");
 
 const completedValidator: ValidationChain = body("completed")
   .trim()
@@ -32,6 +71,16 @@ const completedValidator: ValidationChain = body("completed")
   .withMessage("completed is required!")
   .isBoolean()
   .withMessage("completed must be a boolean value!");
+
+export const getAllTasksValidator: ValidationChain[] = [
+  searchValidator,
+  completedQueryValidator,
+  priorityQueryValidator,
+  createdAtFromQueryValidator,
+  createdAtToQueryValidator,
+  sortByQueryValidator,
+  sortOrderQueryValidator,
+];
 
 export const createNewTaskValidator: ValidationChain[] = [
   titleValidator,
