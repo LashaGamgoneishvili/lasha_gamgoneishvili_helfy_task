@@ -1,4 +1,8 @@
 import React from "react";
+import {
+  TASK_DESCRIPTION_MAX_LENGTH,
+  TASK_TITLE_MAX_LENGTH,
+} from "../../utils/taskValidation";
 
 interface TaskFormFieldsProps {
   title: string;
@@ -25,6 +29,7 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
         value={title}
         onChange={(e) => onTitleChange(e.target.value)}
         className={`title-input ${titleError ? "field-input-error" : ""}`}
+        maxLength={TASK_TITLE_MAX_LENGTH}
         required
       />
       {titleError && <span className="field-error-text">{titleError}</span>}
@@ -36,6 +41,7 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
         value={description}
         onChange={(e) => onDescriptionChange(e.target.value)}
         className={`desc-input ${descriptionError ? "field-input-error" : ""}`}
+        maxLength={TASK_DESCRIPTION_MAX_LENGTH}
         required
       />
       {descriptionError && (

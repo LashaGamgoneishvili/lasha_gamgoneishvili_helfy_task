@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type { TaskFormErrors } from "../../types/FormErrors";
 import type { Task, TaskPriority } from "../../types/Tasks";
+import { normalizeTaskInput, validateTaskInput } from "../../utils/taskValidation";
 import { TaskModalActions } from "./TaskModalActions";
 import { TASK_MODAL_EXIT_ANIMATION_MS } from "./TaskModal.constants";
 import { TaskModalFormFields } from "./TaskModalFormFields";
@@ -28,6 +29,12 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const [dueDate, setDueDate] = useState("");
   const [isRendered, setIsRendered] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
+  const [clientErrors, setClientErrors] = useState<TaskFormErrors>({});
+
+  const mergedErrors = useMemo(
+    () => ({ ...errors, ...clientErrors }),
+    [errors, clientErrors],
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -48,7 +55,10 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   }, [isOpen, isRendered]);
 
   useEffect(() => {
-    if (!task) return;
+    if (!task) {
+      setClientErrors({});
+      return;
+    }
 
     setTitle(task.title);
     setDescription(task.description);
@@ -56,18 +66,34 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     setDueDate(
       task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
     );
+    setClientErrors({});
   }, [task]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!task) return;
 
-    const saved = await onSave({
-      ...task,
+    const normalized = normalizeTaskInput({
       title,
       description,
       priority,
-      dueDate: dueDate ? new Date(dueDate) : undefined,
+      dueDate,
+    });
+
+    const validationErrors = validateTaskInput(normalized);
+    if (Object.keys(validationErrors).length > 0) {
+      setClientErrors(validationErrors);
+      return;
+    }
+
+    setClientErrors({});
+
+    const saved = await onSave({
+      ...task,
+      title: normalized.title,
+      description: normalized.description,
+      priority: normalized.priority as TaskPriority,
+      dueDate: normalized.dueDate ? new Date(normalized.dueDate) : undefined,
     });
 
     if (saved) {
@@ -89,14 +115,26 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             description={description}
             priority={priority}
             dueDate={dueDate}
-            titleError={errors.title}
-            descriptionError={errors.description}
-            priorityError={errors.priority}
-            dueDateError={errors.dueDate}
-            onTitleChange={setTitle}
-            onDescriptionChange={setDescription}
-            onPriorityChange={setPriority}
-            onDueDateChange={setDueDate}
+            titleError={mergedErrors.title}
+            descriptionError={mergedErrors.description}
+            priorityError={mergedErrors.priority}
+            dueDateError={mergedErrors.dueDate}
+            onTitleChange={(value) => {
+              setTitle(value);
+              setClientErrors((prev) => ({ ...prev, title: undefined }));
+            }}
+            onDescriptionChange={(value) => {
+              setDescription(value);
+              setClientErrors((prev) => ({ ...prev, description: undefined }));
+            }}
+            onPriorityChange={(value) => {
+              setPriority(value);
+              setClientErrors((prev) => ({ ...prev, priority: undefined }));
+            }}
+            onDueDateChange={(value) => {
+              setDueDate(value);
+              setClientErrors((prev) => ({ ...prev, dueDate: undefined }));
+            }}
           />
           <TaskModalActions onClose={onClose} />
         </form>

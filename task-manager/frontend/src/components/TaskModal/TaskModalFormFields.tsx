@@ -1,5 +1,9 @@
 import React from "react";
 import type { TaskPriority } from "../../types/Tasks";
+import {
+  TASK_DESCRIPTION_MAX_LENGTH,
+  TASK_TITLE_MAX_LENGTH,
+} from "../../utils/taskValidation";
 import { CustomSelect } from "../CustomSelect/CustomSelect";
 import { DateInput } from "../DateInput/DateInput";
 import { TASK_MODAL_PRIORITY_OPTIONS } from "./TaskModal.constants";
@@ -40,6 +44,7 @@ export const TaskModalFormFields: React.FC<TaskModalFormFieldsProps> = ({
         type="text"
         value={title}
         onChange={(e) => onTitleChange(e.target.value)}
+        maxLength={TASK_TITLE_MAX_LENGTH}
         required
         placeholder="Task title"
         className={titleError ? "field-input-error" : ""}
@@ -54,6 +59,7 @@ export const TaskModalFormFields: React.FC<TaskModalFormFieldsProps> = ({
         onChange={(e) => onDescriptionChange(e.target.value)}
         placeholder="Task description"
         rows={3}
+        maxLength={TASK_DESCRIPTION_MAX_LENGTH}
         required
         className={descriptionError ? "field-input-error" : ""}
       />
