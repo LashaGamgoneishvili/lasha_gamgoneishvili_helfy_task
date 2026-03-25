@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import tasksRouter from "./routes/tasksRoutes";
 
 const port = 4000;
 
@@ -11,6 +12,8 @@ app.use("/health", async (_req: Request, res: Response) => {
     status: "ok",
   });
 });
+
+app.use("/api/tasks", tasksRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on: http://localhost:${port}`);
