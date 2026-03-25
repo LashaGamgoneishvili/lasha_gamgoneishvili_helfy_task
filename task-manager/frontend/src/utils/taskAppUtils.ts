@@ -7,13 +7,13 @@ const PRIORITY_ORDER: Record<Task["priority"], number> = {
   low: 1,
 };
 
-export const parseStoredTasks = (raw: string | null, fallback: Task[]): Task[] => {
-  if (!raw) return fallback;
+export const parseStoredTasks = (raw: string | null): Task[] => {
+  if (!raw) return [];
 
   try {
     const parsed = JSON.parse(raw);
 
-    if (Array.isArray(parsed) && parsed.length > 0) {
+    if (Array.isArray(parsed)) {
       return parsed.map((task: Task) => ({
         ...task,
         createdAt: new Date(task.createdAt),
@@ -21,26 +21,11 @@ export const parseStoredTasks = (raw: string | null, fallback: Task[]): Task[] =
       }));
     }
   } catch {
-    return fallback;
+    return [];
   }
 
-  return fallback;
+  return [];
 };
-
-export const buildNewTask = (
-  title: string,
-  description: string,
-  priority: Task["priority"],
-  dueDate?: Date
-): Task => ({
-  id: Date.now(),
-  title,
-  description,
-  priority,
-  dueDate,
-  completed: false,
-  createdAt: new Date(),
-});
 
 export const filterTasks = (tasks: Task[], filters: FilterState): Task[] =>
   tasks.filter((task) => {

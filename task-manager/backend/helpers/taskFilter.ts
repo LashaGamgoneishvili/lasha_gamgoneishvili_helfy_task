@@ -31,6 +31,10 @@ export function filterTasks(
     }
 
     if (!task.dueDate) {
+      if (filters.dueDateFrom || filters.dueDateTo) {
+        return false;
+      }
+
       return true;
     }
 

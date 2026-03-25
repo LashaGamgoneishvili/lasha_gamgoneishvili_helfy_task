@@ -5,10 +5,16 @@ import { TaskModal } from "./components/TaskModal/TaskModal";
 import { AppHeaderSection } from "./components/AppSections/AppHeaderSection";
 import { TaskCreationSection } from "./components/AppSections/TaskCreationSection";
 import { TaskListSection } from "./components/AppSections/TaskListSection";
-import { MOCK_TASKS } from "./constants/mockTasks";
-import type { Task, TaskPriority } from "./types";
 import {
-  buildNewTask,
+  createTask,
+  deleteTaskById,
+  fetchTasks,
+  toggleTaskStatus,
+  updateTaskById,
+} from "./api/tasksApi";
+import type { Task, TaskPriority } from "./types";
+import { buildFetchTasksParams } from "./utils/taskApiQuery";
+import {
   filterTasks,
   getTaskStats,
   parseStoredTasks,
@@ -36,8 +42,12 @@ export default function App() {
   });
 
   const [tasks, setTasks] = useState<Task[]>(() =>
-    parseStoredTasks(localStorage.getItem("tasks"), MOCK_TASKS)
+    parseStoredTasks(localStorage.getItem("tasks"))
   );
+  const [remoteFilteredTasks, setRemoteFilteredTasks] = useState<Task[] | null>(
+    null
+  );
+  const [queryRefreshKey, setQueryRefreshKey] = useState(0);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTaskId, setDeletingTaskId] = useState<number | null>(null);
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
@@ -58,52 +68,200 @@ export default function App() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
-  const handleAddTask = (
+  useEffect(() => {
+    let isActive = true;
+
+    const syncTasksFromApi = async () => {
+      try {
+        const remoteTasks = await fetchTasks();
+        if (isActive) {
+          setTasks(remoteTasks);
+        }
+      } catch (error) {
+        console.error("Failed to load tasks from API. Using local cache.", error);
+      }
+    };
+
+    void syncTasksFromApi();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const syncFilteredTasksFromApi = async () => {
+      setRemoteFilteredTasks(null);
+
+      try {
+        const remoteTasks = await fetchTasks(
+          buildFetchTasksParams(filters, sortBy)
+        );
+        if (isActive) {
+          setRemoteFilteredTasks(remoteTasks);
+        }
+      } catch (error) {
+        if (isActive) {
+          setRemoteFilteredTasks(null);
+        }
+        console.error(
+          "Failed to load filtered/sorted tasks from API. Using local filtering.",
+          error
+        );
+      }
+    };
+
+    void syncFilteredTasksFromApi();
+
+    return () => {
+      isActive = false;
+    };
+  }, [filters, sortBy, queryRefreshKey]);
+
+  const handleAddTask = async (
     title: string,
     description: string,
     priority: TaskPriority,
     dueDate?: Date
   ) => {
-    const newTask = buildNewTask(title, description, priority, dueDate);
-    setTasks((prevTasks) => [newTask, ...prevTasks]);
+    const optimisticTask: Task = {
+      id: -Date.now(),
+      title,
+      description,
+      priority,
+      dueDate,
+      completed: false,
+      createdAt: new Date(),
+    };
+
+    setTasks((prevTasks) => [optimisticTask, ...prevTasks]);
+
+    try {
+      const createdTask = await createTask({
+        title,
+        description,
+        priority,
+        dueDate,
+      });
+
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === optimisticTask.id ? createdTask : task
+        )
+      );
+      setQueryRefreshKey((prev) => prev + 1);
+    } catch (error) {
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== optimisticTask.id)
+      );
+      console.error("Failed to create task.", error);
+    }
   };
 
-  const handleToggleTask = (id: number) => {
+  const handleToggleTask = async (id: number) => {
+    const existingTask = tasks.find((task) => task.id === id);
+    if (!existingTask) return;
+
+    const nextCompleted = !existingTask.completed;
+
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+        task.id === id ? { ...task, completed: nextCompleted } : task
       )
     );
+
+    try {
+      const updatedTask = await toggleTaskStatus(id, nextCompleted);
+      if (!updatedTask) {
+        setQueryRefreshKey((prev) => prev + 1);
+        return;
+      }
+
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task.id === id ? updatedTask : task))
+      );
+      setQueryRefreshKey((prev) => prev + 1);
+    } catch (error) {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === id ? { ...task, completed: existingTask.completed } : task
+        )
+      );
+      console.error("Failed to toggle task status.", error);
+    }
   };
 
   const handleConfirmDelete = (id: number) => {
     setDeletingTaskId(id);
   };
 
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     if (deletingTaskId === null) return;
 
+    const taskIdToDelete = deletingTaskId;
+    const deletedTaskIndex = tasks.findIndex((task) => task.id === taskIdToDelete);
+    const deletedTask = tasks[deletedTaskIndex];
+
     setTasks((prevTasks) =>
-      prevTasks.filter((task) => task.id !== deletingTaskId)
+      prevTasks.filter((task) => task.id !== taskIdToDelete)
     );
     setDeletingTaskId(null);
+
+    try {
+      await deleteTaskById(taskIdToDelete);
+      setQueryRefreshKey((prev) => prev + 1);
+    } catch (error) {
+      if (deletedTask && deletedTaskIndex >= 0) {
+        setTasks((prevTasks) => {
+          if (prevTasks.some((task) => task.id === deletedTask.id)) {
+            return prevTasks;
+          }
+
+          const restoredTasks = [...prevTasks];
+          restoredTasks.splice(deletedTaskIndex, 0, deletedTask);
+          return restoredTasks;
+        });
+      }
+      console.error("Failed to delete task.", error);
+    }
   };
 
-  const handleUpdateTask = (updatedTask: Task) => {
+  const handleUpdateTask = async (updatedTask: Task) => {
+    const previousTask = tasks.find((task) => task.id === updatedTask.id);
+    if (!previousTask) return;
+
     setTasks((prevTasks) =>
       prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
     );
+
+    try {
+      const savedTask = await updateTaskById(updatedTask);
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task.id === savedTask.id ? savedTask : task))
+      );
+      setQueryRefreshKey((prev) => prev + 1);
+    } catch (error) {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === previousTask.id ? previousTask : task
+        )
+      );
+      console.error("Failed to update task.", error);
+    }
   };
 
   const handleReorderTasks = (newTasks: Task[]) => {
     setTasks(newTasks);
   };
 
-  const filteredAndSortedTasks = useMemo(() => {
+  const localFilteredAndSortedTasks = useMemo(() => {
     const filteredTasks = filterTasks(tasks, filters);
     return sortTasks(filteredTasks, sortBy);
   }, [tasks, filters, sortBy]);
 
+  const displayedTasks = remoteFilteredTasks ?? localFilteredAndSortedTasks;
   const stats = useMemo(() => getTaskStats(tasks), [tasks]);
 
   return (
@@ -118,7 +276,7 @@ export default function App() {
         <TaskCreationSection onAddTask={handleAddTask} />
 
         <TaskListSection
-          tasks={filteredAndSortedTasks}
+          tasks={displayedTasks}
           filters={filters}
           sortBy={sortBy}
           onFilterChange={setFilters}

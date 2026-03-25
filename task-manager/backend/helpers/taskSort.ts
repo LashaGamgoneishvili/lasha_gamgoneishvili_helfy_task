@@ -29,10 +29,21 @@ export function sortTasks(
         result = priorityRank[a.priority] - priorityRank[b.priority];
         break;
 
-      case "dueDate":
-        result =
-          new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime();
+      case "dueDate": {
+        const fallbackDueDateTime =
+          sortOrder === "asc"
+            ? Number.POSITIVE_INFINITY
+            : Number.NEGATIVE_INFINITY;
+        const aDueDateTime = a.dueDate
+          ? new Date(a.dueDate).getTime()
+          : fallbackDueDateTime;
+        const bDueDateTime = b.dueDate
+          ? new Date(b.dueDate).getTime()
+          : fallbackDueDateTime;
+
+        result = aDueDateTime - bDueDateTime;
         break;
+      }
     }
 
     return result * direction;

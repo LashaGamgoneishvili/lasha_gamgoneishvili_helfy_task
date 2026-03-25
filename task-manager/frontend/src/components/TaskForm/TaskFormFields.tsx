@@ -27,10 +27,11 @@ export const TaskFormFields: React.FC<TaskFormFieldsProps> = ({
 
     <div className="form-group">
       <textarea
-        placeholder="Add a description (optional)"
+        placeholder="Add a description"
         value={description}
         onChange={(e) => onDescriptionChange(e.target.value)}
         className="desc-input"
+        required
       />
     </div>
   </>

@@ -1,6 +1,6 @@
 import { body, param, query, ValidationChain } from "express-validator";
 
-const searchValidator: ValidationChain = param("search")
+const searchValidator: ValidationChain = query("search")
   .optional()
   .trim()
   .isString()
@@ -43,8 +43,10 @@ const dueDateToQueryValidator: ValidationChain = query("dueDateTo")
 
 const sortByQueryValidator: ValidationChain = query("sortBy")
   .optional()
-  .isIn(["id", "title", "createdAt", "priority"])
-  .withMessage("sortBy must be one of: id, title, createdAt, priority!");
+  .isIn(["id", "title", "createdAt", "priority", "dueDate"])
+  .withMessage(
+    "sortBy must be one of: id, title, createdAt, priority, dueDate!",
+  );
 
 const sortOrderQueryValidator: ValidationChain = query("sortOrder")
   .optional()
@@ -84,11 +86,11 @@ const dueDateValidator: ValidationChain = body("dueDate")
   .toDate();
 
 const completedValidator: ValidationChain = body("completed")
-  .trim()
-  .notEmpty()
+  .exists()
   .withMessage("completed is required!")
   .isBoolean()
-  .withMessage("completed must be a boolean value!");
+  .withMessage("completed must be a boolean value!")
+  .toBoolean();
 
 export const getAllTasksValidator: ValidationChain[] = [
   searchValidator,

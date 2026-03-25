@@ -45,12 +45,12 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   return (
     <div
-      className={`modal-overlay ${isClosing ? "is-closing" : "is-open"}`}
+      className={`confirm-modal-overlay ${isClosing ? "is-closing" : "is-open"}`}
       onClick={onClose}
       aria-hidden={!isOpen}
     >
       <div
-        className="confirm-modal"
+        className="confirm-modal-content"
         onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
       >
         <ConfirmModalHeader title={title} onClose={onClose} />

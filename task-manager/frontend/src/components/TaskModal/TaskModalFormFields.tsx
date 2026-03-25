@@ -44,6 +44,7 @@ export const TaskModalFormFields: React.FC<TaskModalFormFieldsProps> = ({
         onChange={(e) => onDescriptionChange(e.target.value)}
         placeholder="Task description"
         rows={3}
+        required
       />
     </div>
 
