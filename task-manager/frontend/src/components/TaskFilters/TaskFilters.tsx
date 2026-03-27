@@ -50,7 +50,7 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
       filters.createdTo !== "" ||
       filters.dueFrom !== "" ||
       filters.dueTo !== "",
-    [filters]
+    [filters],
   );
 
   return (
